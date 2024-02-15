@@ -41,7 +41,7 @@ def fetch_embedding(model, input_text):
         try:
             vectors[word] = model.get_vector(word)
         except:
-            continue
+            vectors[word] = [0]*300
     return vectors
      
 
