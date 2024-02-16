@@ -4,13 +4,13 @@ from nltk.corpus import brown
 
 nlp = spacy.load("en_core_web_sm") 
 try:
-    word_embedding_model = gensim.models.KeyedVectors.load_word2vec_format('/home/ziggy/Downloads/GoogleNews-vectors-negative300.bin.gz', binary=True)
+    word_embedding_model = gensim.models.KeyedVectors.load_word2vec_format('./GoogleNews-vectors-negative300.bin.gz', binary=True)
 except FileNotFoundError:
     print("No local embedding found. Downloading instead...")
     import gensim.downloader as api
     word_embedding_model = api.load('word2vec-google-news-300')
 
-./GoogleNews-vectors-negative300.bin.gz
+
 
 def tokenize(input_text):
     """
@@ -176,20 +176,6 @@ def dep_dist_to_head(input_text):
     return dist
 
 
-
-def Tag(input_text):
-    '''
-    This function provides more detailed part-of-speech tag.
-    Input: flat python string
-    Return: A list of dict with {'token':token, 'pos':its pos tag}
-    '''
-    doc = nlp(input_text)
-    tag = []
-    for token in doc:
-        dict={}
-        dict['token'], dict['tag'] = token.text, token.tag_
-        tag.append(dict)
-    return tag
 
 
 def Tag(input_text):
