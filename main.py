@@ -1,8 +1,13 @@
 import spacy
 import gensim
-from nltk.corpus import brown, wordnet
+import nltk
+nltk.download('wordnet')
+from nltk.corpus import wordnet
+import sys
 
 nlp = spacy.load("en_core_web_sm") 
+
+
 try:
     word_embedding_model = gensim.models.KeyedVectors.load_word2vec_format('./GoogleNews-vectors-negative300.bin.gz', binary=True)
 except FileNotFoundError:
@@ -22,6 +27,7 @@ def tokenize(input_text):
     doc = nlp(input_text)
     return [token for token in doc]
 
+
 def lemmatization(input_text):
     """
     function to return the lemmas of all words in the input text.
@@ -33,7 +39,7 @@ def lemmatization(input_text):
     return [token.lemma_ for token in doc]
 
 
-def fetch_embedding(model, input_text):
+def extract_embedding(input_text):
     """
     function to return all embedding vectors for each word from an input text.
         :input: flat python string
@@ -44,12 +50,11 @@ def fetch_embedding(model, input_text):
     vectors = dict()
     for word in words:
         try:
-            vectors[word] = model.get_vector(word)
+            vectors[word] = word_embedding_model.get_vector(word)
         except:
             vectors[word] = [0]*300
     return vectors
      
-
 
 def named_entity_recognition(input_text):
     """
@@ -60,11 +65,6 @@ def named_entity_recognition(input_text):
 
     doc = nlp(input_text)
     return [ent for ent in doc.ents]
-
-
-# test_str = 'this input string is used as a test to see if these words can be embedded.'
-
-# # print(fetch_embedding(model=word_embedding_model, input_text=test_str))
 
 
 def sub_tree(input_text):
@@ -84,7 +84,6 @@ def sub_tree(input_text):
         sub_tree_relations.append({token.text: [child.text for child in sub_tree]})  # Store {word:sub_tree} relation
     return sub_tree_relations
 
-# Extract Capitalization information, return a list of values, 0 for False, 1 for True
 
 def capitalization(input_text):
     '''
@@ -106,7 +105,6 @@ def syntactic_head(input_text):
     Input: flat python string
     Return: heads (list): List of dictionaries with {word:head} relation
     '''
-
     doc = nlp(input_text)
     heads = []  # Initialize a list to store {word:head} relation
     for token in doc:
@@ -128,6 +126,22 @@ def PoS_tag(input_text):
         pos.append(dict)
     return pos
 
+
+def Tag(input_text):
+    '''
+    This function provides more detailed part-of-speech tag.
+    Input: flat python string
+    Return: A list of dict with {'token':token, 'pos':its pos tag}
+    '''
+    doc = nlp(input_text)
+    tag = []
+    for token in doc:
+        dict={}
+        dict['token'], dict['tag'] = token.text, token.tag_
+        tag.append(dict)
+    return tag
+
+
 def dep_relations(input_text):
     '''
     This function labels the dependency for each word in the text
@@ -141,6 +155,7 @@ def dep_relations(input_text):
         dict['token'], dict['pos'] = token.text, token.dep_
         dep.append(dict)
     return dep
+
 
 def dep_path(input_text):
     '''
@@ -159,6 +174,7 @@ def dep_path(input_text):
         deps.append(dep)
     return deps
 
+
 def dep_dist_to_head(input_text):
     '''
     This function calculates the dependency distance from token to head.
@@ -173,23 +189,6 @@ def dep_dist_to_head(input_text):
         dict['token'],dict['dist_to_head'] = doc[i].text, token_full_info[i]['id']-token_full_info[i]['head']
         dist.append(dict)
     return dist
-
-
-
-
-def Tag(input_text):
-    '''
-    This function provides more detailed part-of-speech tag.
-    Input: flat python string
-    Return: A list of dict with {'token':token, 'pos':its pos tag}
-    '''
-    doc = nlp(input_text)
-    tag = []
-    for token in doc:
-        dict={}
-        dict['token'], dict['tag'] = token.text, token.tag_
-        tag.append(dict)
-    return tag
 
 
 def extract_bigram(input_text):
@@ -233,7 +232,6 @@ def extract_morph_inform(input_text):
     return morph
 
 
-
 def is_predicate (input_text):
     '''
     This function extracts the governing predicate, in this case the verb issued. 
@@ -256,7 +254,8 @@ def is_predicate (input_text):
             predicate.append(dict)
     return predicate
 
-def wordnet_class (input_text):
+
+def extract_wordnet_class (input_text):
     '''
     This function extracts the wordnet classes for all words in a sentence. 
 
@@ -266,5 +265,44 @@ def wordnet_class (input_text):
     
     doc = nlp(input_text)
     return [wordnet.synsets(str(token)) for token in doc if token != '']
+
+
+def main():
+    # Check if user provided enough arguments
+    if len(sys.argv) < 3:
+        print("Usage: python main.py <function_name> <'input_string'>")
+        sys.exit(1)
+
+    # Get function number and input string from command line arguments
+    function_name = sys.argv[1]
+    input_string = sys.argv[2].replace("'",'')
+
+    # Check if the function exists
+    if function_name in globals() and callable(globals()[function_name]):
+        # Call the function dynamically using exec
+        result = exec(f"{function_name}('{input_string}')")
+        print(result)
+    else:
+        print("Invalid function name, possible functions are:")
+        print("""   tokenize
+                    lemmatization
+                    extract_embedding
+                    named_entity_recognition
+                    sub_tree
+                    capitalization
+                    syntactic_head
+                    PoS_tag
+                    Tag
+                    dep_relations
+                    dep_path
+                    dep_dist_to_head
+                    extract_bigram
+                    extract_morph_inform
+                    is_predicate
+                    extract_wordnet_class
+              """)
+
+if __name__ == "__main__":
+    main()
 
 # "Noun phrases:" [chunk.text for chunk in doc.noun_chunks])
