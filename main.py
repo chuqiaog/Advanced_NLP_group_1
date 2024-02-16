@@ -53,6 +53,7 @@ def extract_embedding(input_text):
             vectors[word] = word_embedding_model.get_vector(word)
         except:
             vectors[word] = [0]*300
+
     return vectors
      
 
@@ -280,8 +281,8 @@ def main():
     # Check if the function exists
     if function_name in globals() and callable(globals()[function_name]):
         # Call the function dynamically using exec
-        result = exec(f"{function_name}('{input_string}')")
-        print(result)
+        exec(f"print({function_name}('{input_string}'))")
+        
     else:
         print("Invalid function name, possible functions are:")
         print("""   tokenize
