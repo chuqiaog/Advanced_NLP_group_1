@@ -2,9 +2,13 @@ import spacy
 import gensim
 from nltk.corpus import brown
 
-
 nlp = spacy.load("en_core_web_sm") 
-word_embedding_model = gensim.models.KeyedVectors.load_word2vec_format('./GoogleNews-vectors-negative300.bin.gz', binary=True)
+try:
+    word_embedding_model = gensim.models.KeyedVectors.load_word2vec_format('./GoogleNews-vectors-negative300.bin.gz', binary=True)
+except FileNotFoundError:
+    print("No local embedding found. Downloading instead...")
+    import gensim.downloader as api
+    word_embedding_model = api.load('word2vec-google-news-300')
 
 
 
@@ -27,6 +31,7 @@ def lemmatization(input_text):
 
     doc = nlp(input_text)
     return [token.lemma_ for token in doc]
+
 
 def fetch_embedding(model, input_text):
     """
@@ -107,3 +112,65 @@ def syntactic_head(input_text):
     for token in doc:
         heads[token.text] = token.head.text  # Add {word:head} relation to the dict
     return heads
+
+
+###
+def PoS_tag(input_text):
+    '''
+    This function tags the Part-of-Speech tag of the words in the text
+    Input: flat python string
+    Return: A list of dict with {'token':token, 'pos':its pos tag}
+    '''
+    doc = nlp(input_text)
+    pos = []
+    for token in doc:
+        dict={}
+        dict['token'], dict['pos'] = token.text, token.pos_
+        pos.append(dict)
+    return pos
+
+def dep_relations(input_text):
+    '''
+    This function labels the dependency for each word in the text
+    Input: flat python string
+    Return: A list of dict with {'token':token, 'dep': its dependency tag}
+    '''
+    doc = nlp(input_text)
+    dep = []
+    for token in doc:
+        dict={}
+        dict['token'], dict['pos'] = token.text, token.dep_
+        dep.append(dict)
+    return dep
+
+def dep_path(input_text):
+    '''
+    This function shows the dependency path
+    Input: flat python string
+    Return: list of dicts. list: sentences in the text. 
+                           dicts: token in the sentences as {'token':token, 
+                                                             'head': the head of the token, 
+                                                             'children': list of the childrens of the token}
+    '''
+    doc = nlp(input_text)
+    deps = []
+    for token in doc:
+        dep={}
+        dep['token'],dep['head'],dep['children'] = token.text, token.head.text, [child for child in token.children]
+        deps.append(dep)
+    return deps
+
+def dep_dist_to_head(input_text):
+    '''
+    This function calculates the dependency distance from token to head.
+    Input: flat python string
+    Return: A list of dict with {'token':token, 'dist_to_head':its distance to head}
+            If negative, then the token is before the head.
+    '''
+    doc = nlp(input_text)
+    token_full_info, dist = doc.to_json()['tokens'], []
+    for i in range(len(doc)):
+        dict={}
+        dict['token'],dict['dist_to_head'] = doc[i].text, token_full_info[i]['id']-token_full_info[i]['head']
+        dist.append(dict)
+    return dist
