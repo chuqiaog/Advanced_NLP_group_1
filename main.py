@@ -71,18 +71,18 @@ def sub_tree(input_text):
     '''
     This function generates the sub_tree of the input text.
     Input: flat python string
-    Return: sub_tree_relation (dict): Dictionary of {word:sub_tree} relation
+    Return: sub_tree_relations (list): List of dictionaries with {word:sub_tree} relation
     '''
+
     doc = nlp(input_text)
-    sub_tree_relation = {}  # Initiate a dictionary to store the sub_tree relation
+    sub_tree_relations = []  # Initialize a list to store {word:sub_tree} relations
     for token in doc:
         if list(token.children) == []:
             sub_tree = [token]
         else:
             sub_tree = list(token.children)
-        sub_tree_relation[token.text] = [child.text for child in sub_tree]  # Store {token: sub_tree} relation
-    return sub_tree_relation
-
+        sub_tree_relations.append({token.text: [child.text for child in sub_tree]})  # Store {word:sub_tree} relation
+    return sub_tree_relations
 
 # Extract Capitalization information, return a list of values, 0 for False, 1 for True
 
@@ -104,15 +104,14 @@ def syntactic_head(input_text):
     '''
     This function finds the syntactic head for each word in the input text.
     Input: flat python string
-    Return: heads (dict): Dictionary of {word:head} relation
+    Return: heads (list): List of dictionaries with {word:head} relation
     '''
 
     doc = nlp(input_text)
-    heads = {}  # Initialize a dict to store {word:head} relation
+    heads = []  # Initialize a list to store {word:head} relation
     for token in doc:
-        heads[token.text] = token.head.text  # Add {word:head} relation to the dict
+        heads.append({token.text: token.head.text})  # Add {word:head} relation to the list
     return heads
-
 
 ###
 def PoS_tag(input_text):
