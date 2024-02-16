@@ -1,6 +1,6 @@
 import spacy
 import gensim
-from nltk.corpus import brown
+from nltk.corpus import brown, wordnet
 
 nlp = spacy.load("en_core_web_sm") 
 try:
@@ -255,5 +255,16 @@ def is_predicate (input_text):
             dict['token'], dict['is_predicate'] = token.text, "_"
             predicate.append(dict)
     return predicate
+
+def wordnet_class (input_text):
+    '''
+    This function extracts the wordnet classes for all words in a sentence. 
+
+    Input: flat python string
+    Return: A list Synset objects containing all wordnet class matches for a given word.
+    '''
+    
+    doc = nlp(input_text)
+    return [wordnet.synsets(str(token)) for token in doc if token != '']
 
 # "Noun phrases:" [chunk.text for chunk in doc.noun_chunks])
