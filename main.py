@@ -4,13 +4,13 @@ from nltk.corpus import brown
 
 nlp = spacy.load("en_core_web_sm") 
 try:
-    word_embedding_model = gensim.models.KeyedVectors.load_word2vec_format('./GoogleNews-vectors-negative300.bin.gz', binary=True)
+    word_embedding_model = gensim.models.KeyedVectors.load_word2vec_format('/home/ziggy/Downloads/GoogleNews-vectors-negative300.bin.gz', binary=True)
 except FileNotFoundError:
     print("No local embedding found. Downloading instead...")
     import gensim.downloader as api
     word_embedding_model = api.load('word2vec-google-news-300')
 
-
+./GoogleNews-vectors-negative300.bin.gz
 
 def tokenize(input_text):
     """
@@ -64,7 +64,7 @@ def named_entity_recognition(input_text):
 
 # test_str = 'this input string is used as a test to see if these words can be embedded.'
 
-# print(fetch_embedding(model=word_embedding_model, input_text=test_str))
+# # print(fetch_embedding(model=word_embedding_model, input_text=test_str))
 
 
 def sub_tree(input_text):
@@ -174,3 +174,101 @@ def dep_dist_to_head(input_text):
         dict['token'],dict['dist_to_head'] = doc[i].text, token_full_info[i]['id']-token_full_info[i]['head']
         dist.append(dict)
     return dist
+
+
+
+def Tag(input_text):
+    '''
+    This function provides more detailed part-of-speech tag.
+    Input: flat python string
+    Return: A list of dict with {'token':token, 'pos':its pos tag}
+    '''
+    doc = nlp(input_text)
+    tag = []
+    for token in doc:
+        dict={}
+        dict['token'], dict['tag'] = token.text, token.tag_
+        tag.append(dict)
+    return tag
+
+
+def Tag(input_text):
+    '''
+    This function provides more detailed part-of-speech tag.
+    Input: flat python string
+    Return: A list of dict with {'token':token, 'pos':its pos tag}
+    '''
+    doc = nlp(input_text)
+    tag = []
+    for token in doc:
+        dict={}
+        dict['token'], dict['tag'] = token.text, token.tag_
+        tag.append(dict)
+    return tag
+
+
+def extract_bigram(input_text):
+    '''
+    This function creates bigrams of the given text
+
+    Input: flat python string
+    Return: A list of dict with {'token':token, 'bigram': bigram}
+    '''
+
+    doc = nlp(input_text)
+    bigram_list = []
+        
+    for i, token in enumerate(doc):
+        dict={}
+        if i < len(doc) - 1:
+            ngram = str(token) + " " + str(doc[i+1])
+            dict['token'], dict['ngram'] = token.text, ngram
+            bigram_list.append(dict)
+        else:
+            dict['token'], dict['ngram'] = token.text, "EOS" #"end of sentence"
+            bigram_list.append(dict)
+    return bigram_list
+
+
+def extract_morph_inform(input_text):
+    '''
+    This function extracts morphological information
+
+    Input: flat python string
+    Return: A list of dict with {'token':token, 'morph': morph}
+    '''
+
+    doc = nlp(input_text)
+    morph = []
+
+    for token in doc:
+        dict={}
+        dict['token'], dict['morph'] = token.text, token.morph
+        morph.append(dict)
+    return morph
+
+
+
+def is_predicate (input_text):
+    '''
+    This function extracts the governing predicate, in this case the verb issued. 
+
+    Input: Tflat python string
+    Return: A list of dict with {'token':token, 'is_predicate': "VERB"/"_"}
+    '''
+
+    doc = nlp(input_text)
+    predicate = []
+
+    for token in doc:
+        dict={}
+        if token.pos_ == "VERB":
+        
+            dict['token'], dict['is_predicate'] = token.text, "VERB"
+            predicate.append(dict)
+        else:
+            dict['token'], dict['is_predicate'] = token.text, "_"
+            predicate.append(dict)
+    return predicate
+
+# "Noun phrases:" [chunk.text for chunk in doc.noun_chunks])
