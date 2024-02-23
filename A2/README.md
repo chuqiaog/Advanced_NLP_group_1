@@ -18,15 +18,25 @@ source venv/bin/activate
 
 ## List of Content
 
-1. Datasets
+1. Data (The dataset folder)
 
-   - Training data: data/en_ewt-up-train.conllu
+   - Training data: en_ewt-up-train.conllu
 
-   - Development data: data/en_ewt-up-dev.conllu
+   - Development data: en_ewt-up-dev.conllu
 
-   - Testing data: data/en_ewt-up-test.conllu
+   - Testing data: en_ewt-up-test.conllu
+  
+2. Output (The output folder)
 
-2. requirements.txt
+   - singlelogreg.csv
+     
+   - doublelogreg.csv
+   
+   - GPUdoublelogreg.csv
+
+   - GPUsinglelogreg.csv
+
+4. requirements.txt
    - Install the required packages by executing the following command in termial by:
 
 ``` bash
