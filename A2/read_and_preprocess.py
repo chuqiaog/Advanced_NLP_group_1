@@ -1,3 +1,5 @@
+import copy
+
 ######################## READING AND PREPROCESSING ########################
 def read_conll(conllfile):
     """

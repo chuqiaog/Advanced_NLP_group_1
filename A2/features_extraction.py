@@ -1,3 +1,8 @@
+import copy
+import spacy
+from tqdm.auto import tqdm
+nlp = spacy.load("en_core_web_sm")
+
 ######################## FEATURE EXTRACTION ########################
 def dep_dist_to_head(input_text, conll_keys):
     '''

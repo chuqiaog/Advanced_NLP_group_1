@@ -1,3 +1,5 @@
+import copy
+
 ######################## TRAINING PREPARATION ########################
 def extract_feature_and_label(preplist):
     """
