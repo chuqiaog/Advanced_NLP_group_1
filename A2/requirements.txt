@@ -1,9 +1,13 @@
-nltk
-numpy
-pandas
-scikit-learn
-matplotlib
-spacy
-cudf
-cupy
-cuml
+click==8.1.7
+click==8.0.3
+gensim==4.3.2
+numpy==1.24.4
+numpy==1.21.5
+pandas==1.5.3
+scikit_learn==1.3.1
+spacy==3.7.2
+tqdm==4.66.1
+
+# cudf_cu11==23.10.2
+# cuml_cu11==23.10.0
+# cupy_cuda11x==12.2.0

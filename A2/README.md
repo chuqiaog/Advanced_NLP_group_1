@@ -2,51 +2,43 @@
 
 This project is part of the Advanced NLP course and focuses on identifying and classifying arguments within sentences using logistic regression.
 
-## Installation
 
-The project used a virtual environment basing on python 3.7 or above. Please create and activate the virtual environment by:
+## Usage
 ``` bash
-# Change directory to current folder
-cd (current folder directory)
-
-# Create a virtual environment named venv
-python -m venv venv
-
-# Activate the virtual environment
-source venv/bin/activate
+python3 A2_main.py *train-data-path* *test-data-path* *output-folder-path* *max_iter-number*
 ```
 
-## List of Content
+example: `python3 A2_main.py data/en_ewt-up-train.conllu data/en_ewt-up-test.conllu output 1000`
 
-1. Data (The dataset folder)
+User will be asked to chose if they want to use GPU when executing.
 
-   - Training data: en_ewt-up-train.conllu
+**If you would like to use GPU, you will need a cuda-compatible device and then uncomment the lines in the requirements.txt**
 
-   - Development data: en_ewt-up-dev.conllu
 
-   - Testing data: en_ewt-up-test.conllu
+
+## Contents
+
+- `A2_main.py`: The main script for the task.
+
+- `A2_main.ipynb`: A step-by-step separated notebook for the entire process.
+
+- data
+
+   - `en_ewt-up-train.conllu`: Training dataset
+
+   - `en_ewt-up-dev.conllu`: Developement dataset
+
+   - `en_ewt-up-test.conllu`: Test dataset
   
-2. Output (The output folder)
+- output
 
-   - singlelogreg.csv
+   - `singlelogreg.csv`: example results from single model trained on cpu with max_iter = 100
      
-   - doublelogreg.csv
+   - `doublelogreg.csv`: example results from double model trained on cpu with max_iter = 100
    
-   - GPUdoublelogreg.csv
+   - `GPUsinglelogreg.csv`:  example results from single model trained on gpu with max_iter = 50000
+   
+   - `GPUdoublelogreg.csv`: example results from double model trained on gpu with max_iter = 50000
 
-   - GPUsinglelogreg.csv
 
-4. requirements.txt
-   - Install the required packages by executing the following command in termial by:
 
-``` bash
-pip install -r requirements.txt
-```
-
-3. A2_main.ipynb
-   - Jupyter Notebook format
-   - Dataset description
-   - Training and evaluation process of the argument detection classifier
-4. main.py
-   - Plain python script format
-   - Training and evaluation process of the argument detection classifier
