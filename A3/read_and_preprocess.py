@@ -1,5 +1,18 @@
 import copy
 
+'''
+This script reads the original conllu file and preprocess it into list of sentence lists.
+
+The preprocessed dataset list have the following structure:
+    Each sentence list is a list of token lists. 
+    Each token list have 13 columns.
+        If a sentence have 0 predicates, the column (list item) 12 and 13 (list[11] and list[12]) are set as None.
+        If the sentence have multiple predicates, it will be duplicated to align the column number.
+        If a sentence does not have record on line 11, it will be filled with '_'
+'''
+
+
+
 ######################## READING AND PREPROCESSING ########################
 def read_conll(conllfile):
     """

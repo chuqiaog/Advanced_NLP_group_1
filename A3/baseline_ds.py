@@ -3,8 +3,27 @@ import datasets
 from transformers import AutoTokenizer
 import numpy as np
 from datasets import load_metric
-metric = load_metric("seqeval")
 
+'''
+This script contains functions and varaibles for the baseline model.
+
+Dataset preparation:
+    - get_mappings_dict(): Get the dictionary mapping string classes (e.g. 'ARG0') to int labels and its reverse.
+    - create_word_sentlist(): Create dictionary containing the required data for generating desired huggingface dataset.
+    - tokenize_and_align_labels(): Adapted from the example notebook. Solves label alignment after re-tokenization.
+    
+Evaluation:
+    - compute_metrics(): Compute the overall percision, recall and f1.
+    - reverse_label(): Map the int class labels back to strings.
+    - class_results(): Compute the percision, recall and f1 for each class.
+
+Variables:
+    - label_dict, label_dict_rev: The mapping dictionary from string class to int class and its reverse.
+    - tokenized_train, tokenized_dev, tokenized_test: The tokenized and ready-to-use datasets.
+    
+'''
+
+metric = load_metric("seqeval")
 task = "srl"
 model_checkpoint = "bert-base-uncased" # bert-base-uncased for better percision, distilbert-base-uncased for faster run
 batch_size = 16
@@ -29,7 +48,7 @@ label_list = sorted(label_dict_rev)
 
 def create_word_sentlist(pre_list):
     '''
-    Creating list of token lists with the ARG and V infomation
+    Creating list of token lists with the ARG and V infomation.
     '''
     word_sentlist = []
     for sentence in pre_list:
@@ -51,7 +70,7 @@ trainds, devds, testds = datasets.Dataset.from_list(trainsent), datasets.Dataset
 
 def tokenize_and_align_labels(examples, label_all_tokens=True):
     '''
-    This function solve label align after re-tokenization.
+    This function solves label alignment after re-tokenization.
     '''
     tokenized_inputs = tokenizer(examples["tokens"],examples['pred'], truncation=True, is_split_into_words=True)
     labels = []
@@ -88,6 +107,9 @@ tokenized_test = testds.map(tokenize_and_align_labels, batched=True)
 
 
 def remove_ignored_index(predictions,labels):
+    '''
+    This functino removes the ignored labels for the special tokens (-100)
+    '''
     actual_predictions = [
         [label_list[p] for (p, l) in zip(prediction, label) if l != -100]
         for prediction, label in zip(predictions, labels)
@@ -99,6 +121,9 @@ def remove_ignored_index(predictions,labels):
     return actual_predictions, actual_labels
     
 def compute_metrics(p):
+    '''
+    This function computes the overall metrics (percision, recall, f1, accuracy)
+    '''
     predictions, labels = p
     predictions = np.argmax(predictions, axis=2) # Most possible label
 
@@ -128,6 +153,9 @@ def reverse_label(num_labels):
 
 
 def class_results(predictions, labels):
+    '''
+    This function computes metrics for each class.
+    '''
     predictions = np.argmax(predictions, axis=2)
 
     true_predictions = [
@@ -142,29 +170,4 @@ def class_results(predictions, labels):
     results = metric.compute(predictions=reverse_label(true_predictions), references=reverse_label(true_labels))
     return results
 
-# --advanced
-def merge_into_sentences(sent_list):
 
-    word_sentlist = []
-    for sent in sent_list:
-        featdict = {}
-        token_list=[]
-        label_list=[]
-        pred_list=[]
-        for d in sent:
-            if d["V"] != '_':
-                token_list.append("Mark")
-                label_list.append(label_dict["_"])
-                token_list.append(d["form"])
-                label_list.append(label_dict[d["ARG"]])
-                token_list.append("Mark")
-                label_list.append(label_dict["_"])
-                pred_list.append(d["form"])
-            else:
-                token_list.append(d["form"])
-                label_list.append(label_dict[d["ARG"]])
-
-        featdict['tokens'],featdict['srl_arg_tags'],featdict['pred'] = token_list,label_list,pred_list
-        word_sentlist.append(featdict)
-    return word_sentlist
-    
