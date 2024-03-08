@@ -281,8 +281,11 @@ advanced_df = pd.DataFrame(advanced_results).T
 baseline_df['Model'] = 'Baseline'
 advanced_df['Model'] = 'Advanced'
 
-# Combine DataFrames
-combined_df = pd.concat([baseline_df, advanced_df])
+# Convert 'Number' column to integers
+baseline_df['number'] = baseline_df['number'].astype(int)
+advanced_df['number'] = advanced_df['number'].astype(int)
+
+
  
 def display_side_by_side(*dfs):
     """
@@ -306,3 +309,4 @@ def filtered_table(baseline_df, advanced_df):
     fil_baseline_df = baseline_df[precision | recall | f1]
     fil_advanced_df = advanced_df[precision | recall | f1]
     return fil_baseline_df, fil_advanced_df
+
