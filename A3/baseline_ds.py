@@ -70,7 +70,7 @@ trainds, devds, testds = datasets.Dataset.from_list(trainsent), datasets.Dataset
 
 def tokenize_and_align_labels(examples, label_all_tokens=True):
     '''
-    This function solves label alignment after re-tokenization.
+    This function solves label alignment after re-tokenization and creates sent+[SEP]+pred+[SEP] structure
     '''
     tokenized_inputs = tokenizer(examples["tokens"],examples['pred'], truncation=True, is_split_into_words=True)
     labels = []
